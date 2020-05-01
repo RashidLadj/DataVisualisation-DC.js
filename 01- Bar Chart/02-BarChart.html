@@ -20,6 +20,7 @@
 
   <body>
     <div id="Barchart"></div>
+    <div id="Barchart2"></div>
 
     <script type="text/javascript" src="../JSLibrary/d3.js"></script>
     <script type="text/javascript" src="  ../JSLibrary/crossfilter.js"></script>
@@ -53,16 +54,21 @@
 
       var facts = crossfilter(data);
       var typeDimension = facts.dimension((d) => d.type);
-      var typeGroup = typeDimension.group();
+      var typeGroup = typeDimension.group().reduceSum((d) => d.total); /** Group with Count Total of each type **/
       
-      var xScale = d3.scale.ordinal()
-                      .domain(data.map((d) => d.type));
+      var xScale = d3.scale.ordinal().domain(data.map((d) => d.type));
 
       dc.barChart("#Barchart")
+        .width(500)       
+        .height(300)
+        .margins({ top: 20, right: 20, bottom: 20, left: 20 })
         .dimension(typeDimension)
         .group(typeGroup)
         .x(xScale)                   /** Scale **/
-        .xUnits(dc.units.ordinal);   /** Bar Position **/
+        .xUnits(dc.units.ordinal)    /** Bar Position **/
+        .barPadding(0.05)            /** Between each two Bars **/
+        .outerPadding(0.05)          /** Before the first and After the Final Bar **/
+        .yAxis().ticks(4);
 
       dc.renderAll();
       
